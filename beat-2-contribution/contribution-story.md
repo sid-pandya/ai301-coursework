@@ -55,10 +55,9 @@ happened; these entries are the toolkit's own timeline.
 All four entries are graded. Keep every heading below, and fill each
 one in the week it belongs to.
 
-**Unit 5: [one line on the tool work]**
+**Unit 5: Installed issue-scout overlay, authored search strategy queries and ranking filters, and calibrated against live wild scans**
 
-[2-4 sentences: what you built (the scout, your strategy), what broke
-or fell short, what changed because of it.]
+I built the issue-scout skill by overlaying search-strategy.md, scope.md, and SKILL.md onto my unit-1 issue-select skill, configuring three queries derived directly from my fit profile alongside five automated ranking filters. In the initial live scan across GitHub, three HTML/accessibility site issues and one frontend UI color palette issue slipped through because the repos were labeled Python while the issues touched site and JS assets. I updated the ranking filters to drop candidates with labels or titles covering accessibility, site, html, or javascript, which successfully surfaced contained Python backend bugs and preserved my focus on pure Python work.
 
 **Unit 6: [one line on the tool work]**
 
