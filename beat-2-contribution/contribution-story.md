@@ -68,7 +68,7 @@ I installed the ship-gate hook, authored ship-manifest.md with the preflight pyt
 
 **Unit 8: Authored response playbook, monitored pull request state, and consolidated contribution story**
 
-I configured the PR monitor in ~/.claude/pr-monitor/ and wrote playbook.md covering response rules, staleness thresholds, nudge etiquette, and walk-away criteria. Running the monitor with --state successfully verified the clone root, branch state, and playbook structure against monarch-initiative/dismech. Because the upstream repository has interaction limits active that restrict issue comments and cross-fork pull requests to existing organization contributors, I documented both the upstream compare link and my active fork pull request in my story.
+I configured the PR monitor in ~/.claude/pr-monitor/ and wrote playbook.md covering response rules, staleness thresholds, nudge etiquette, and walk-away criteria. Running the monitor with --state successfully verified the clone root, branch state, and playbook structure against monarch-initiative/dismech. In CONTRIBUTING.md (lines 71-84), the repository explicitly prohibits opening pull requests from forks (which are closed automatically by close-fork-prs) and instructs new contributors to open an issue requesting branch access to origin. When I attempted to open the access-request issue via `gh issue create`, GitHub returned `GraphQL: sid-pandya does not have the correct permissions to execute CreateIssue` due to repository interaction limits. I documented this dual mechanism, opened the PR on my fork with complete passing test evidence, and recorded the upstream compare link.
 
 ---
 
@@ -78,14 +78,14 @@ I searched for issues using my calibrated issue-scout queries targeting active P
 
 This issue fits my technical profile well because it focuses on string normalization, regular expression lookarounds, and domain model filtering in Python without requiring external web services, database migrations, or frontend adjustments. Working on it offered the opportunity to understand how bioinformatics knowledge bases validate disease-entity identity against external ontologies like MONDO and OMIM. The issue report and maintainer thread provided detailed reproduction cases while highlighting a critical domain distinction between phenotype MIM numbers and gene MIM numbers.
 
-Regarding the scout tool itself, issue-scout held up well in verifying the issue scope and reproducible symptoms, but fell short in detecting GitHub repository interaction settings. When attempting to post my claim comment upstream, GitHub reported that interactions on `monarch-initiative/dismech` were restricted to prior contributors only. Claim status: claim pending (2026-11-15, upstream repository interaction limits restrict comments to prior contributors; claimed on AI301 Issue Selection site).
+Regarding the scout tool itself, issue-scout held up well in verifying the issue scope and reproducible symptoms, but fell short in evaluating repository-specific contribution workflows and permission gates. Inspecting CONTRIBUTING.md revealed that dismech operates under an origin-branch model where PRs from forks are automatically closed by automation; contributors must first open an issue requesting collaborator access to push branches directly to origin. When attempting to post either a claim comment on issue #10458 or an access-request issue via `gh issue create`, GitHub returned `GraphQL: sid-pandya does not have the correct permissions to execute CreateIssue` (and `addComment`), confirming that repository interaction limits restrict issue and comment creation to prior contributors. Claim status: claim pending (2026-11-15, origin-branch access required per CONTRIBUTING.md lines 71-84; issue creation blocked by upstream interaction limits; claimed on AI301 Issue Selection site).
 
 **Toolkit**
 
 - Tool: issue-scout (search-strategy.md queries, custom ranking filters, and rubric.md scope checks)
 - What it produced: Graded evaluation scoring dismech#10458 as a pass, confirming single-file scope in `src/dismech/preflight_dr.py` with direct pytest test coverage.
-- Difficulties: The scout could not detect GitHub interaction restrictions out of band, requiring manual verification of upstream comment permissions.
-- What changed: Logged the repository restriction in scan-notes.md and held the issue reservation on the AI301 Issue Selection site.
+- Difficulties: The scout could not detect repo-specific collaborator onboarding rules (CONTRIBUTING.md origin-branch requirement) or GitHub interaction limits out of band.
+- What changed: Documented the origin-branch policy and GraphQL permission limits in scan-notes.md and held the reservation on the AI301 Issue Selection site.
 
 ---
 
@@ -232,7 +232,7 @@ The testing strategy relies on three layers of observable verification:
 
 **2026-11-15: Issue Selection and Baseline Reproduction**
 
-Selected issue #10458 on `monarch-initiative/dismech` after verifying that alternative candidates had already been addressed upstream. Forked the repository to `sid-pandya/dismech` and set up the local clone. Encountered compilation issues with system Python 3.14 during `uv sync`; installed Python 3.12 via `uv python install 3.12` and established a clean virtual environment. Authored `repro.py` and reproduced the regex parsing failures across bare phenotype numbers, bolded markdown text, and backslash-escaped characters. Drafted an upstream claim comment in `claim-draft.md`; tested it against `voice-guard`, which stopped the draft until unsupported assertions were rephrased with proper attribution. Attempted to post the claim comment upstream, which revealed active repository interaction limits restricting interactions to prior contributors. Documented the restriction and held the claim on the AI301 tracker site.
+Selected issue #10458 on `monarch-initiative/dismech` after verifying that alternative candidates had already been addressed upstream. Forked the repository to `sid-pandya/dismech` and set up the local clone. Encountered compilation issues with system Python 3.14 during `uv sync`; installed Python 3.12 via `uv python install 3.12` and established a clean virtual environment. Authored `repro.py` and reproduced the regex parsing failures across bare phenotype numbers, bolded markdown text, and backslash-escaped characters. Drafted an upstream claim comment in `claim-draft.md`; tested it against `voice-guard`, which stopped the draft until unsupported assertions were rephrased with proper attribution. Checked CONTRIBUTING.md, which specifies an origin-branch contribution model ("Do not open pull requests from forks... Contributors should push branches directly to origin... first open an issue asking to be added to the repository"). Attempted to open the contributor-access issue via `gh issue create`, which revealed active repository interaction limits returning `GraphQL: sid-pandya does not have the correct permissions to execute CreateIssue` (and `addComment`). Documented the origin-branch requirement alongside the interaction restriction, and held the claim on the AI301 tracker site.
 
 **2026-11-15: Architecture Design, Fix Implementation, and Ship-Gate Validation**
 
@@ -242,8 +242,8 @@ Implemented the fix in `src/dismech/preflight_dr.py` using `EMPHASIS_RE` for mar
 
 - Tool: Git CLI, `uv`, and `voice-guard`
 - What it produced: Git commit `3a9114561b8`, branch `fix/10458-bare-omim-phenotype-numbers`, and pull request `https://github.com/sid-pandya/dismech/pull/1`.
-- Difficulties: GitHub GraphQL interaction limits prevented creating the PR directly against the upstream repository without existing contributor privileges.
-- What changed: Opened the pull request on fork `sid-pandya/dismech`, documented the upstream compare URL, and recorded the permission limit.
+- Difficulties: CONTRIBUTING.md specifies that fork PRs are closed by automation and requires contributors to open an access-request issue to push to origin. However, GitHub interaction limits blocked issue creation (`GraphQL: sid-pandya does not have the correct permissions to execute CreateIssue`), preventing onboarding as a collaborator before submission.
+- What changed: Opened the pull request on fork `sid-pandya/dismech` with full test evidence, documented the upstream compare URL, and recorded the permission limit.
 
 ---
 
@@ -296,7 +296,7 @@ My workflow was AI-assisted (Claude Code). I ran all commands, reproduction scri
 
 **Maintainer Feedback:**
 
-- 2026-11-15: Upstream repository interaction limits active (`GraphQL: Interactions on this repository have been restricted to prior contributors only`). Branch pushed to origin and pull request created on fork (`sid-pandya/dismech/pull/1`); compare link available for upstream maintainer review.
+- 2026-11-15: Per CONTRIBUTING.md lines 71-84, the repository requires branches to be pushed directly to origin rather than from forks, instructing new contributors to first open an issue requesting repository access. Attempted to open the contributor-access issue via `gh issue create`, but GitHub reported `GraphQL: sid-pandya does not have the correct permissions to execute CreateIssue` due to active interaction limits on the repository. Branch `fix/10458-bare-omim-phenotype-numbers` was pushed to fork `sid-pandya/dismech` and pull request #1 opened there with full reproduction and test evidence; compare link available for upstream maintainers.
 
 **Status:** Awaiting review
 
@@ -304,8 +304,8 @@ My workflow was AI-assisted (Claude Code). I ran all commands, reproduction scri
 
 - Tool: `check_voice.py`, `check_gate.py`, and `gh pr create`
 - What it produced: PR #1 on `sid-pandya/dismech` with verified PR draft passing all voice guard checks and ship-gate criteria.
-- Difficulties: Upstream repository interaction restrictions required opening the PR on fork while recording the upstream compare target.
-- What changed: Recorded both fork pull request URL and upstream compare branch link.
+- Difficulties: CONTRIBUTING.md prohibits fork PRs while GitHub interaction limits simultaneously block opening the required access-request issue.
+- What changed: Recorded the fork pull request URL, the upstream compare branch link, and documented the dual policy and permission constraints.
 
 ---
 
@@ -317,7 +317,7 @@ Working on this contribution strengthened my understanding of regular expression
 
 **Challenges Overcome**
 
-The primary challenge was handling repository and tool boundary conditions. First, local main was behind upstream main, causing the ship-gate to detect unrelated disorder curation commits as diff drift; fast-forwarding local main to `upstream/main` cleanly resolved the issue. Second, the voice-guard hook enforced strict evidence pairing, requiring unevidenced claims to be rephrased before posting. Finally, when GitHub interaction limits prevented commenting or creating a PR directly against `monarch-initiative/dismech`, I documented the repository constraint honestly, maintained the claim on the course tracker site, and opened the PR on my fork.
+The primary challenge was handling repository and tool boundary conditions. First, local main was behind upstream main, causing the ship-gate to detect unrelated disorder curation commits as diff drift; fast-forwarding local main to `upstream/main` cleanly resolved the issue. Second, the voice-guard hook enforced strict evidence pairing, requiring unevidenced claims to be rephrased before posting. Finally, CONTRIBUTING.md mandated pushing branches directly to origin (closing fork PRs automatically) via an issue requesting collaborator access; when attempting to open this issue, GitHub returned `GraphQL: sid-pandya does not have the correct permissions to execute CreateIssue` due to active interaction limits. I documented the dual repository policy and permission constraints honestly, maintained the claim on the course tracker site, and opened the PR on my fork with full test evidence.
 
 **What I'd Do Differently Next Time**
 
